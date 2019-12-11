@@ -1,0 +1,87 @@
+git init
+npm init
+
+No Usado
+	#npm i -D jasmine nyc ts-node typescript
+	#npm i -D @types/jasmine
+
+	#npm test
+	#npm run coverage
+
+Initialize typescript compiler and linter :
+	npm install typescript@latest --save-dev
+	tsc --init --moduleResolution node --target ES2017 --sourceMap --module commonjs --removeComments --outDir dist 
+
+	npm install tslint --save-dev
+	npm install tslint -g
+	tslint --init
+
+	npm install @types/node --save-dev
+
+Now we need to install Jasmine and jasmine to typescript reporter:
+	npm install jasmine @types/jasmine --save-dev
+	npm install jasmine-ts-console-reporter --save-dev
+	
+Initialize jasmine in your project :
+	./node_modules/.bin/jasmine init
+	
+	vi spec/support/jasmine.json
+		{
+		  "spec_dir": "dist/spec",
+		  "spec_files": [
+			"**/*[sS]pec.js"
+		  ],
+		  "helpers": [
+			"helpers/**/*.js"
+		  ],
+		  "stopSpecOnExpectationFailure": false,
+		  "random": false
+		}
+		
+	mkdir spec/helper
+	touch spec/helper/ts_console.ts
+	vi spec/helper/ts_console.ts
+		// tslint:disable-next-line:no-var-requires
+		const TSConsoleReporter = require("jasmine-ts-console-reporter");
+
+		jasmine.getEnv().clearReporters(); // Clear default console reporter
+		jasmine.getEnv().addReporter(new TSConsoleReporter());
+	
+Code
+	mkdir src/
+	vi src/myapi.ts
+		export class MyApi {
+			public getName(): string {
+				return "Kevin";
+			}
+		}
+
+		console.log(new MyApi().getName());
+
+Test
+	vi spec/myapi-spec.ts
+		import {MyApi} from "../src/MyApi";
+
+		describe("MyApi getName function return value", () => {
+			it("Should be defined.", () => {
+				const myapi = new MyApi();
+				expect(myapi.getName()).toBeDefined("The function getName() should be defined.");
+			});
+
+			it("Should't return blank.", () => {
+				const myapi = new MyApi();
+				expect(myapi.getName()).not.toMatch("", "The function getName() should return the name.");
+			});
+
+			it("Should return 'MyName'" , () => {
+				const myapi = new MyApi();
+				expect(myapi.getName()).toMatch("MyName");
+			});
+
+		} );
+
+Compile
+	tsc
+
+Jasmine
+	./node_modules/.bin/jasmine
